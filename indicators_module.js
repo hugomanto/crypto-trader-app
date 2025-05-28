@@ -1,10 +1,8 @@
 /**
  * Módulo de Cálculo de Indicadores Técnicos
- * 
- * Este módulo implementa cálculos reais para os principais indicadores técnicos
+ * * Este módulo implementa cálculos reais para os principais indicadores técnicos
  * utilizados na análise de criptomoedas, substituindo as simulações aleatórias.
- * 
- * Indicadores implementados:
+ * * Indicadores implementados:
  * - RSI (Relative Strength Index)
  * - MACD (Moving Average Convergence Divergence)
  * - Médias Móveis (Simples e Exponencial)
@@ -19,7 +17,7 @@
  * @param {Number} period - Período para cálculo (padrão: 14)
  * @returns {Number} - Valor do RSI (0-100)
  */
-function calculateRSI(prices, period = 14) {
+export function calculateRSI(prices, period = 14) {
   if (!prices || prices.length < period + 1) {
     console.error('Dados insuficientes para cálculo do RSI');
     return null;
@@ -71,10 +69,10 @@ function calculateRSI(prices, period = 14) {
   // Calcular RS e RSI
   // Se avgLoss for zero, o RSI é 100
   if (avgLoss === 0) return 100;
-  
+
   const rs = avgGain / avgLoss;
   const rsi = 100 - (100 / (1 + rs));
-  
+
   // Retornar com precisão de 2 casas decimais
   return parseFloat(rsi.toFixed(2));
 }
@@ -85,25 +83,25 @@ function calculateRSI(prices, period = 14) {
  * @param {Number} period - Período para cálculo
  * @returns {Array} - Array de valores SMA
  */
-function calculateSMA(prices, period) {
+export function calculateSMA(prices, period) {
   if (!prices || prices.length < period) {
     console.error('Dados insuficientes para cálculo da SMA');
     return [];
   }
 
   const sma = [];
-  
+
   // Preencher com null até termos dados suficientes
   for (let i = 0; i < period - 1; i++) {
     sma.push(null);
   }
-  
+
   // Calcular SMA para cada período
   for (let i = period - 1; i < prices.length; i++) {
     const sum = prices.slice(i - period + 1, i + 1).reduce((total, price) => total + price, 0);
     sma.push(parseFloat((sum / period).toFixed(2)));
   }
-  
+
   return sma;
 }
 
@@ -113,7 +111,7 @@ function calculateSMA(prices, period) {
  * @param {Number} period - Período para cálculo
  * @returns {Array} - Array de valores EMA
  */
-function calculateEMA(prices, period) {
+export function calculateEMA(prices, period) {
   if (!prices || prices.length < period) {
     console.error('Dados insuficientes para cálculo da EMA');
     return [];
@@ -121,20 +119,20 @@ function calculateEMA(prices, period) {
 
   const ema = [];
   const multiplier = 2 / (period + 1);
-  
+
   // Iniciar com SMA
   const smaFirst = prices.slice(0, period).reduce((total, price) => total + price, 0) / period;
   ema.push(smaFirst);
-  
+
   // Calcular EMA para cada período subsequente
   for (let i = period; i < prices.length; i++) {
     const currentEMA = (prices[i] - ema[ema.length - 1]) * multiplier + ema[ema.length - 1];
     ema.push(parseFloat(currentEMA.toFixed(2)));
   }
-  
+
   // Preencher com null os valores iniciais para alinhar com o array de preços
   const result = Array(period - 1).fill(null).concat(ema);
-  
+
   return result;
 }
 
@@ -146,7 +144,7 @@ function calculateEMA(prices, period) {
  * @param {Number} signalPeriod - Período da linha de sinal (padrão: 9)
  * @returns {Object} - Objeto com valores MACD, Signal e Histogram
  */
-function calculateMACD(prices, fastPeriod = 12, slowPeriod = 26, signalPeriod = 9) {
+export function calculateMACD(prices, fastPeriod = 12, slowPeriod = 26, signalPeriod = 9) {
   if (!prices || prices.length < slowPeriod + signalPeriod) {
     console.error('Dados insuficientes para cálculo do MACD');
     return { line: [], signal: [], histogram: [] };
@@ -155,7 +153,7 @@ function calculateMACD(prices, fastPeriod = 12, slowPeriod = 26, signalPeriod = 
   // Calcular EMAs
   const fastEMA = calculateEMA(prices, fastPeriod);
   const slowEMA = calculateEMA(prices, slowPeriod);
-  
+
   // Calcular linha MACD (diferença entre EMAs)
   const macdLine = [];
   for (let i = 0; i < prices.length; i++) {
@@ -165,14 +163,14 @@ function calculateMACD(prices, fastPeriod = 12, slowPeriod = 26, signalPeriod = 
       macdLine.push(null);
     }
   }
-  
+
   // Calcular linha de sinal (EMA da linha MACD)
   const validMacdValues = macdLine.filter(value => value !== null);
   const signalEMA = calculateEMA(validMacdValues, signalPeriod);
-  
+
   // Alinhar a linha de sinal com a linha MACD
   const signalLine = Array(macdLine.length - validMacdValues.length).fill(null).concat(signalEMA);
-  
+
   // Calcular histograma (MACD - Signal)
   const histogram = [];
   for (let i = 0; i < macdLine.length; i++) {
@@ -182,7 +180,7 @@ function calculateMACD(prices, fastPeriod = 12, slowPeriod = 26, signalPeriod = 
       histogram.push(null);
     }
   }
-  
+
   return {
     line: macdLine,
     signal: signalLine,
@@ -197,7 +195,7 @@ function calculateMACD(prices, fastPeriod = 12, slowPeriod = 26, signalPeriod = 
  * @param {Number} stdDev - Número de desvios padrão (padrão: 2)
  * @returns {Object} - Objeto com bandas superior, média e inferior
  */
-function calculateBollingerBands(prices, period = 20, stdDev = 2) {
+export function calculateBollingerBands(prices, period = 20, stdDev = 2) {
   if (!prices || prices.length < period) {
     console.error('Dados insuficientes para cálculo das Bandas de Bollinger');
     return { upper: [], middle: [], lower: [] };
@@ -205,31 +203,31 @@ function calculateBollingerBands(prices, period = 20, stdDev = 2) {
 
   // Calcular SMA (banda média)
   const sma = calculateSMA(prices, period);
-  
+
   const upper = [];
   const lower = [];
-  
+
   // Preencher com null até termos dados suficientes
   for (let i = 0; i < period - 1; i++) {
     upper.push(null);
     lower.push(null);
   }
-  
+
   // Calcular bandas superior e inferior
   for (let i = period - 1; i < prices.length; i++) {
     const slice = prices.slice(i - period + 1, i + 1);
-    
+
     // Calcular desvio padrão
     const mean = slice.reduce((sum, price) => sum + price, 0) / period;
     const squaredDiffs = slice.map(price => Math.pow(price - mean, 2));
     const variance = squaredDiffs.reduce((sum, diff) => sum + diff, 0) / period;
     const standardDeviation = Math.sqrt(variance);
-    
+
     // Calcular bandas
     upper.push(parseFloat((sma[i] + (standardDeviation * stdDev)).toFixed(2)));
     lower.push(parseFloat((sma[i] - (standardDeviation * stdDev)).toFixed(2)));
   }
-  
+
   return {
     upper: upper,
     middle: sma,
@@ -243,7 +241,7 @@ function calculateBollingerBands(prices, period = 20, stdDev = 2) {
  * @param {Number} period - Período para análise (padrão: 14)
  * @returns {Object} - Objeto com análise de volume
  */
-function analyzeVolume(volumes, period = 14) {
+export function analyzeVolume(volumes, period = 14) {
   if (!volumes || volumes.length < period) {
     console.error('Dados insuficientes para análise de volume');
     return { 
@@ -257,20 +255,20 @@ function analyzeVolume(volumes, period = 14) {
   // Calcular volume médio do período
   const recentVolumes = volumes.slice(-period);
   const averageVolume = recentVolumes.reduce((sum, vol) => sum + vol, 0) / period;
-  
+
   // Calcular mudança percentual do último volume em relação à média
   const lastVolume = volumes[volumes.length - 1];
   const volumeChange = ((lastVolume - averageVolume) / averageVolume) * 100;
-  
+
   // Determinar se o volume está alto (>50% acima da média)
   const isVolumeHigh = volumeChange > 50;
-  
+
   // Analisar tendência de volume (últimos 3 períodos vs 3 anteriores)
   const last3 = volumes.slice(-3).reduce((sum, vol) => sum + vol, 0) / 3;
   const prev3 = volumes.slice(-6, -3).reduce((sum, vol) => sum + vol, 0) / 3;
   const volumeTrend = last3 > prev3 * 1.2 ? 'increasing' : 
                       last3 < prev3 * 0.8 ? 'decreasing' : 'neutral';
-  
+
   return {
     averageVolume: parseFloat(averageVolume.toFixed(2)),
     volumeChange: parseFloat(volumeChange.toFixed(2)),
@@ -285,7 +283,7 @@ function analyzeVolume(volumes, period = 14) {
  * @param {Number} lookback - Períodos para análise retrospectiva
  * @returns {Object} - Objeto com níveis de suporte e resistência
  */
-function findSupportResistanceLevels(prices, lookback = 30) {
+export function findSupportResistanceLevels(prices, lookback = 30) {
   if (!prices || prices.length < lookback || !prices[0].high) {
     console.error('Dados insuficientes ou formato incorreto para análise de suporte/resistência');
     return { support: [], resistance: [] };
@@ -293,7 +291,7 @@ function findSupportResistanceLevels(prices, lookback = 30) {
 
   const supports = [];
   const resistances = [];
-  
+
   // Encontrar mínimos locais (suportes) e máximos locais (resistências)
   for (let i = 5; i < prices.length - 5; i++) {
     // Verificar se é um mínimo local
@@ -306,7 +304,7 @@ function findSupportResistanceLevels(prices, lookback = 30) {
         index: i
       });
     }
-    
+
     // Verificar se é um máximo local
     if (prices[i].high > prices[i-1].high && 
         prices[i].high > prices[i-2].high && 
@@ -318,15 +316,15 @@ function findSupportResistanceLevels(prices, lookback = 30) {
       });
     }
   }
-  
+
   // Agrupar níveis próximos (dentro de 0.5% um do outro)
   const groupedSupports = groupLevels(supports);
   const groupedResistances = groupLevels(resistances);
-  
+
   // Ordenar por relevância (frequência de toque)
   const sortedSupports = groupedSupports.sort((a, b) => b.strength - a.strength);
   const sortedResistances = groupedResistances.sort((a, b) => b.strength - a.strength);
-  
+
   // Retornar os níveis mais significativos (top 3)
   return {
     support: sortedSupports.slice(0, 3).map(s => parseFloat(s.price.toFixed(2))),
@@ -339,15 +337,15 @@ function findSupportResistanceLevels(prices, lookback = 30) {
  * @param {Array} levels - Array de níveis (preço e índice)
  * @returns {Array} - Array de níveis agrupados com força
  */
-function groupLevels(levels) {
+function groupLevels(levels) { // Esta função auxiliar não precisa ser exportada
   if (levels.length === 0) return [];
-  
+
   const grouped = [];
   const threshold = 0.005; // 0.5% de tolerância
-  
+
   for (const level of levels) {
     let found = false;
-    
+
     for (const group of grouped) {
       // Verificar se o nível está próximo o suficiente de um grupo existente
       if (Math.abs(level.price - group.price) / group.price < threshold) {
@@ -359,7 +357,7 @@ function groupLevels(levels) {
         break;
       }
     }
-    
+
     // Se não encontrou grupo, criar um novo
     if (!found) {
       grouped.push({
@@ -368,7 +366,7 @@ function groupLevels(levels) {
       });
     }
   }
-  
+
   return grouped;
 }
 
@@ -378,16 +376,16 @@ function groupLevels(levels) {
  * @param {Number} low - Preço mais baixo do período
  * @returns {Object} - Objeto com níveis de Fibonacci
  */
-function calculateFibonacciLevels(high, low) {
+export function calculateFibonacciLevels(high, low) {
   if (high === undefined || low === undefined) {
     console.error('Dados insuficientes para cálculo dos níveis de Fibonacci');
     return {};
   }
 
   const diff = high - low;
-  
+
   return {
-    level0: parseFloat(high.toFixed(2)),                    // 0%
+    level0: parseFloat(high.toFixed(2)),             // 0%
     level236: parseFloat((high - 0.236 * diff).toFixed(2)), // 23.6%
     level382: parseFloat((high - 0.382 * diff).toFixed(2)), // 38.2%
     level500: parseFloat((high - 0.5 * diff).toFixed(2)),   // 50%
@@ -403,39 +401,39 @@ function calculateFibonacciLevels(high, low) {
  * @param {Number} period - Período para cálculo (padrão: 14)
  * @returns {Array} - Array de valores ATR
  */
-function calculateATR(prices, period = 14) {
+export function calculateATR(prices, period = 14) {
   if (!prices || prices.length < period + 1 || !prices[0].high) {
     console.error('Dados insuficientes ou formato incorreto para cálculo do ATR');
     return [];
   }
 
   const trueRanges = [];
-  
+
   // Calcular True Range para cada período
   for (let i = 1; i < prices.length; i++) {
     const high = prices[i].high;
     const low = prices[i].low;
     const prevClose = prices[i-1].close;
-    
+
     const tr1 = high - low;
     const tr2 = Math.abs(high - prevClose);
     const tr3 = Math.abs(low - prevClose);
-    
+
     const trueRange = Math.max(tr1, tr2, tr3);
     trueRanges.push(trueRange);
   }
-  
+
   // Calcular ATR inicial (média simples dos primeiros N períodos)
   let atr = trueRanges.slice(0, period).reduce((sum, tr) => sum + tr, 0) / period;
-  
+
   const atrValues = [atr];
-  
+
   // Calcular ATR para os períodos restantes (usando suavização)
   for (let i = period; i < trueRanges.length; i++) {
     atr = ((atr * (period - 1)) + trueRanges[i]) / period;
     atrValues.push(parseFloat(atr.toFixed(4)));
   }
-  
+
   // Preencher com null os valores iniciais para alinhar com o array de preços
   return Array(period).fill(null).concat(atrValues);
 }
@@ -446,7 +444,7 @@ function calculateATR(prices, period = 14) {
  * @param {Number} period - Período para cálculo (padrão: 14)
  * @returns {Object} - Objeto com valores ADX, +DI e -DI
  */
-function calculateADX(prices, period = 14) {
+export function calculateADX(prices, period = 14) {
   if (!prices || prices.length < period * 2 || !prices[0].high) {
     console.error('Dados insuficientes ou formato incorreto para cálculo do ADX');
     return { adx: [], plusDI: [], minusDI: [] };
@@ -455,7 +453,7 @@ function calculateADX(prices, period = 14) {
   const trueRanges = [];
   const plusDM = [];
   const minusDM = [];
-  
+
   // Calcular +DM, -DM e TR para cada período
   for (let i = 1; i < prices.length; i++) {
     const high = prices[i].high;
@@ -463,18 +461,18 @@ function calculateADX(prices, period = 14) {
     const prevHigh = prices[i-1].high;
     const prevLow = prices[i-1].low;
     const prevClose = prices[i-1].close;
-    
+
     // Calcular True Range
     const tr1 = high - low;
     const tr2 = Math.abs(high - prevClose);
     const tr3 = Math.abs(low - prevClose);
     const trueRange = Math.max(tr1, tr2, tr3);
     trueRanges.push(trueRange);
-    
+
     // Calcular +DM e -DM
     const upMove = high - prevHigh;
     const downMove = prevLow - low;
-    
+
     if (upMove > downMove && upMove > 0) {
       plusDM.push(upMove);
       minusDM.push(0);
@@ -486,48 +484,48 @@ function calculateADX(prices, period = 14) {
       minusDM.push(0);
     }
   }
-  
+
   // Calcular ATR suavizado
   let smoothedTR = trueRanges.slice(0, period).reduce((sum, tr) => sum + tr, 0);
   let smoothedPlusDM = plusDM.slice(0, period).reduce((sum, dm) => sum + dm, 0);
   let smoothedMinusDM = minusDM.slice(0, period).reduce((sum, dm) => sum + dm, 0);
-  
+
   const plusDIs = [];
   const minusDIs = [];
   const dxValues = [];
-  
+
   // Calcular +DI, -DI e DX para cada período
   for (let i = period; i < prices.length - 1; i++) {
     // Atualizar valores suavizados
     smoothedTR = smoothedTR - (smoothedTR / period) + trueRanges[i];
     smoothedPlusDM = smoothedPlusDM - (smoothedPlusDM / period) + plusDM[i];
     smoothedMinusDM = smoothedMinusDM - (smoothedMinusDM / period) + minusDM[i];
-    
+
     // Calcular +DI e -DI
     const plusDI = (smoothedPlusDM / smoothedTR) * 100;
     const minusDI = (smoothedMinusDM / smoothedTR) * 100;
-    
+
     plusDIs.push(parseFloat(plusDI.toFixed(2)));
     minusDIs.push(parseFloat(minusDI.toFixed(2)));
-    
+
     // Calcular DX
     const dx = Math.abs((plusDI - minusDI) / (plusDI + minusDI)) * 100;
     dxValues.push(parseFloat(dx.toFixed(2)));
   }
-  
+
   // Calcular ADX (média do DX)
   const adxValues = [];
   let adx = dxValues.slice(0, period).reduce((sum, dx) => sum + dx, 0) / period;
   adxValues.push(parseFloat(adx.toFixed(2)));
-  
+
   for (let i = 1; i < dxValues.length - period + 1; i++) {
     adx = ((adx * (period - 1)) + dxValues[i + period - 1]) / period;
     adxValues.push(parseFloat(adx.toFixed(2)));
   }
-  
+
   // Preencher com null os valores iniciais para alinhar com o array de preços
   const nullPadding = Array(prices.length - adxValues.length).fill(null);
-  
+
   return {
     adx: nullPadding.concat(adxValues),
     plusDI: nullPadding.slice(0, nullPadding.length - plusDIs.length).concat(plusDIs),
@@ -540,32 +538,32 @@ function calculateADX(prices, period = 14) {
  * @param {Array} candles - Array de candles (open, high, low, close)
  * @returns {Array} - Array de padrões identificados
  */
-function identifyCandlePatterns(candles) {
+export function identifyCandlePatterns(candles) {
   if (!candles || candles.length < 3 || !candles[0].open) {
     console.error('Dados insuficientes ou formato incorreto para identificação de padrões');
     return [];
   }
 
   const patterns = [];
-  
+
   // Analisar os últimos candles para padrões
   for (let i = 2; i < candles.length; i++) {
     const c1 = candles[i-2]; // Antepenúltimo candle
     const c2 = candles[i-1]; // Penúltimo candle
     const c3 = candles[i];   // Último candle
-    
+
     // Calcular tamanhos dos corpos e sombras
     const c1Body = Math.abs(c1.close - c1.open);
     const c2Body = Math.abs(c2.close - c2.open);
     const c3Body = Math.abs(c3.close - c3.open);
-    
+
     const c1UpperShadow = c1.high - Math.max(c1.open, c1.close);
     const c1LowerShadow = Math.min(c1.open, c1.close) - c1.low;
     const c2UpperShadow = c2.high - Math.max(c2.open, c2.close);
     const c2LowerShadow = Math.min(c2.open, c2.close) - c2.low;
     const c3UpperShadow = c3.high - Math.max(c3.open, c3.close);
     const c3LowerShadow = Math.min(c3.open, c3.close) - c3.low;
-    
+
     // Verificar padrão Doji
     if (c3Body / ((c3.high - c3.low) || 1) < 0.1) {
       patterns.push({
@@ -575,7 +573,7 @@ function identifyCandlePatterns(candles) {
         description: 'Indica indecisão no mercado'
       });
     }
-    
+
     // Verificar padrão Martelo (Hammer)
     if (c3.close > c3.open && // Candle de alta
         c3LowerShadow > c3Body * 2 && // Sombra inferior longa
@@ -587,7 +585,7 @@ function identifyCandlePatterns(candles) {
         description: 'Possível reversão de baixa para alta'
       });
     }
-    
+
     // Verificar padrão Estrela Cadente (Shooting Star)
     if (c3.close < c3.open && // Candle de baixa
         c3UpperShadow > c3Body * 2 && // Sombra superior longa
@@ -599,7 +597,7 @@ function identifyCandlePatterns(candles) {
         description: 'Possível reversão de alta para baixa'
       });
     }
-    
+
     // Verificar padrão Engolfo de Alta (Bullish Engulfing)
     if (c2.close < c2.open && // Candle anterior de baixa
         c3.close > c3.open && // Candle atual de alta
@@ -612,7 +610,7 @@ function identifyCandlePatterns(candles) {
         description: 'Forte sinal de reversão para alta'
       });
     }
-    
+
     // Verificar padrão Engolfo de Baixa (Bearish Engulfing)
     if (c2.close > c2.open && // Candle anterior de alta
         c3.close < c3.open && // Candle atual de baixa
@@ -625,7 +623,7 @@ function identifyCandlePatterns(candles) {
         description: 'Forte sinal de reversão para baixa'
       });
     }
-    
+
     // Verificar padrão Harami de Alta (Bullish Harami)
     if (c2.close < c2.open && // Candle anterior de baixa
         c3.close > c3.open && // Candle atual de alta
@@ -634,131 +632,3 @@ function identifyCandlePatterns(candles) {
       patterns.push({
         pattern: 'Harami de Alta',
         position: i,
-        significance: 'bullish',
-        description: 'Possível reversão para alta'
-      });
-    }
-    
-    // Verificar padrão Harami de Baixa (Bearish Harami)
-    if (c2.close > c2.open && // Candle anterior de alta
-        c3.close < c3.open && // Candle atual de baixa
-        c3.high < c2.close && // Máxima abaixo do fechamento anterior
-        c3.low > c2.open) { // Mínima acima da abertura anterior
-      patterns.push({
-        pattern: 'Harami de Baixa',
-        position: i,
-        significance: 'bearish',
-        description: 'Possível reversão para baixa'
-      });
-    }
-    
-    // Verificar padrão Três Soldados Brancos (Three White Soldiers)
-    if (i >= 4 && 
-        candles[i-2].close > candles[i-2].open && // Três candles de alta consecutivos
-        candles[i-1].close > candles[i-1].open &&
-        candles[i].close > candles[i].open &&
-        candles[i-1].open > candles[i-2].open && // Cada um abrindo acima do anterior
-        candles[i].open > candles[i-1].open &&
-        candles[i-1].close > candles[i-2].close && // Cada um fechando acima do anterior
-        candles[i].close > candles[i-1].close) {
-      patterns.push({
-        pattern: 'Três Soldados Brancos',
-        position: i,
-        significance: 'strongly_bullish',
-        description: 'Forte tendência de alta'
-      });
-    }
-    
-    // Verificar padrão Três Corvos Negros (Three Black Crows)
-    if (i >= 4 && 
-        candles[i-2].close < candles[i-2].open && // Três candles de baixa consecutivos
-        candles[i-1].close < candles[i-1].open &&
-        candles[i].close < candles[i].open &&
-        candles[i-1].open < candles[i-2].open && // Cada um abrindo abaixo do anterior
-        candles[i].open < candles[i-1].open &&
-        candles[i-1].close < candles[i-2].close && // Cada um fechando abaixo do anterior
-        candles[i].close < candles[i-1].close) {
-      patterns.push({
-        pattern: 'Três Corvos Negros',
-        position: i,
-        significance: 'strongly_bearish',
-        description: 'Forte tendência de baixa'
-      });
-    }
-  }
-  
-  return patterns;
-}
-
-/**
- * Converte preço de USDT para BRL (Real Brasileiro)
- * @param {Number} priceUSDT - Preço em USDT
- * @returns {Promise<Number>} - Preço em BRL
- */
-async function convertUSDTtoBRL(priceUSDT) {
-  try {
-    // Taxa de conversão USDT para BRL (pode ser obtida de uma API externa)
-    // Aqui estamos usando uma API pública para obter a taxa atual
-    const response = await axios.get('https://economia.awesomeapi.com.br/json/last/USD-BRL');
-    
-    if (response.data && response.data.USDBRL) {
-      const exchangeRate = parseFloat(response.data.USDBRL.bid);
-      return parseFloat((priceUSDT * exchangeRate).toFixed(2));
-    } else {
-      // Fallback para uma taxa fixa caso a API falhe
-      const fallbackRate = 5.3; // Taxa fixa de fallback
-      return parseFloat((priceUSDT * fallbackRate).toFixed(2));
-    }
-  } catch (error) {
-    console.error('Erro ao converter USDT para BRL:', error);
-    // Fallback para uma taxa fixa em caso de erro
-    const fallbackRate = 5.3; // Taxa fixa de fallback
-    return parseFloat((priceUSDT * fallbackRate).toFixed(2));
-  }
-}
-
-/**
- * Formata preço para exibição no padrão Binance
- * @param {Number} price - Preço a ser formatado
- * @param {String} currency - Moeda (USDT ou BRL)
- * @returns {String} - Preço formatado
- */
-function formatPrice(price, currency = 'USDT') {
-  // Determinar o número de casas decimais com base no valor
-  let decimals = 2;
-  if (price < 1) decimals = 6;
-  else if (price < 10) decimals = 4;
-  else if (price < 1000) decimals = 2;
-  
-  // Formatar com separador de milhares e casas decimais
-  const formattedPrice = price.toLocaleString('en-US', {
-    minimumFractionDigits: decimals,
-    maximumFractionDigits: decimals
-  });
-  
-  // Adicionar prefixo da moeda
-  if (currency === 'BRL') {
-    return `R$${formattedPrice}`;
-  } else {
-    return formattedPrice;
-  }
-}
-
-/**
- * Exporta todas as funções do módulo
- */
-module.exports = {
-  calculateRSI,
-  calculateSMA,
-  calculateEMA,
-  calculateMACD,
-  calculateBollingerBands,
-  analyzeVolume,
-  findSupportResistanceLevels,
-  calculateFibonacciLevels,
-  calculateATR,
-  calculateADX,
-  identifyCandlePatterns,
-  convertUSDTtoBRL,
-  formatPrice
-};
