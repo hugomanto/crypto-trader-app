@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crypto Alertas - MVP</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Menu lateral -->
+        <div class="sidebar">
+            <div class="sidebar-header">Menu</div>
+            <div class="sidebar-menu">
+                <a href="#" class="menu-item active">Meus Alertas</a>
+                
+                <div class="menu-category">Compra</div>
+                <div class="submenu">
+                    <a href="#" class="submenu-item">Forte</a>
+                    <a href="#" class="submenu-item">Neutra</a>
+                    <a href="#" class="submenu-item">Baixa</a>
+                </div>
+                
+                <div class="menu-category">Venda</div>
+                <div class="submenu">
+                    <a href="#" class="submenu-item">Forte</a>
+                    <a href="#" class="submenu-item">Neutra</a>
+                    <a href="#" class="submenu-item">Baixa</a>
+                </div>
+                
+                <div class="menu-category">Monitoramento</div>
+                <div class="submenu">
+                    <a href="#" class="submenu-item">Próximo ao Suporte</a>
+                    <a href="#" class="submenu-item">Próximo à Resistência</a>
+                    <a href="#" class="submenu-item">Volume Atípico</a>
+                    <a href="#" class="submenu-item">Padrão Gráfico</a>
+                </div>
+                
+                <a href="#" class="menu-item">Manual do Usuário</a>
+                <a href="#" class="menu-item">Configurações</a>
+                <a href="#" class="menu-item">Sair</a>
+            </div>
+        </div>
+        <div class="sidebar-overlay"></div>
+        
+        <!-- Conteúdo principal -->
+        <div class="main-content">
+            <!-- Cabeçalho -->
+            <div class="header">
+                <button class="menu-button" onclick="toggleSidebar()">☰</button>
+                <h1 class="header-title">Meus Alertas</h1>
+            </div>
+
+            <!-- Filtros rápidos -->
+            <div class="filters-container">
+                <button class="filter-button compra active">
+                    Compra <span class="badge">3</span>
+                </button>
+                <button class="filter-button venda">
+                    Venda <span class="badge">4</span>
+                </button>
+                <button class="filter-button monitoramento">
+                    Monitoramento <span class="badge">2</span>
+                </button>
+            </div>
+
+            <!-- Conteúdo de alertas - Duas colunas -->
+            <div class="alerts-container">
+                <!-- Conteúdo será preenchido dinamicamente pelo JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="indicators_module.js"></script>
+    <script src="price_display_module.js"></script>
+    <script src="api.js"></script>
+    <script src="modal_detalhes.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

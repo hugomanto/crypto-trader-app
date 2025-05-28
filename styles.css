@@ -1,0 +1,490 @@
+/* Estilos para o Crypto Alert MVP - baseado exatamente no design aprovado */
+
+/* Reset e base */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  font-family: 'Roboto', sans-serif;
+  font-size: 16px;
+  color: #e9ecef;
+  background-color: #212529;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Layout principal - centralizado conforme design aprovado */
+.app-container {
+  max-width: 800px;
+  min-height: 100vh;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.main-content {
+  flex: 1;
+}
+
+/* Cabeçalho - simplificado conforme design aprovado */
+.header {
+  display: flex;
+  align-items: center;
+  padding: 16px;
+  background-color: #212529;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  border-bottom: 1px solid #495057;
+}
+
+.header-title {
+  font-size: 20px;
+  font-weight: 700;
+  text-align: center;
+  flex: 1;
+  color: #e9ecef;
+}
+
+.menu-button {
+  background: none;
+  border: none;
+  font-size: 20px;
+  color: #e9ecef;
+  cursor: pointer;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Filtros rápidos - estilo conforme design aprovado */
+.filters-container {
+  display: flex;
+  padding: 8px;
+  background-color: #212529;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.filter-button {
+  padding: 8px 16px;
+  margin-right: 8px;
+  border: none;
+  border-radius: 8px;
+  color: #e9ecef;
+  font-size: 16px;
+  font-weight: 500;
+  white-space: nowrap;
+  transition: background-color 0.3s;
+  position: relative;
+  cursor: pointer;
+}
+
+.filter-button.compra {
+  background-color: #2980b9;
+}
+
+.filter-button.venda {
+  background-color: #c0392b;
+}
+
+.filter-button.monitoramento {
+  background-color: #8e44ad;
+}
+
+.filter-button.active {
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.5);
+}
+
+/* Badge para alertas não lidos - conforme design aprovado */
+.badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background-color: #e74c3c;
+  color: white;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+/* Conteúdo principal - Duas colunas conforme design aprovado */
+.alerts-container {
+  display: flex;
+  flex: 1;
+  margin-bottom: 24px;
+}
+
+.alerts-column {
+  flex: 1;
+  padding: 8px;
+  min-width: 0; /* Evita overflow em telas pequenas */
+}
+
+.column-title {
+  font-size: 18px;
+  font-weight: 700;
+  padding: 8px 0;
+  text-align: center;
+  border-bottom: 2px solid;
+  margin-bottom: 16px;
+  text-transform: uppercase;
+}
+
+.buy-column .column-title {
+  border-color: #2ecc71;
+  color: #2ecc71;
+}
+
+.sell-column .column-title {
+  border-color: #e74c3c;
+  color: #e74c3c;
+}
+
+/* Cards de alerta - simplificados conforme design aprovado */
+.alert-card, .monitoring-card {
+  background-color: #343a40;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+  cursor: pointer;
+  position: relative;
+  transition: background-color 0.2s, transform 0.1s;
+}
+
+.alert-card:hover, .monitoring-card:hover {
+  background-color: #3e454d;
+}
+
+.alert-card:active, .monitoring-card:active {
+  transform: scale(0.98);
+}
+
+.alert-card.buy {
+  border-left: 3px solid #2ecc71;
+}
+
+.alert-card.sell {
+  border-left: 3px solid #e74c3c;
+}
+
+.monitoring-card {
+  border-left: 3px solid #8e44ad;
+}
+
+/* Indicador de não lido conforme design aprovado */
+.alert-card.unread::after, .monitoring-card.unread::after {
+  content: '';
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #3498db;
+}
+
+.alert-symbol {
+  font-weight: 700;
+  font-size: 18px;
+  margin-bottom: 4px;
+}
+
+.alert-price {
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.monitoring-type {
+  font-size: 14px;
+  color: #adb5bd;
+  margin-top: 8px;
+}
+
+/* Visualização de monitoramento */
+.monitoring-container {
+  width: 100%;
+  padding: 8px;
+}
+
+.monitoring-title {
+  font-size: 18px;
+  font-weight: 700;
+  padding: 8px 0;
+  text-align: center;
+  border-bottom: 2px solid #8e44ad;
+  color: #8e44ad;
+  margin-bottom: 16px;
+  text-transform: uppercase;
+}
+
+.monitoring-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 16px;
+}
+
+/* Menu hambúrguer - conforme design aprovado */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 80%;
+  max-width: 300px;
+  background-color: #343a40;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+  z-index: 100;
+  transform: translateX(-100%);
+  transition: transform 0.3s;
+  overflow-y: auto;
+}
+
+.sidebar.open {
+  transform: translateX(0);
+}
+
+.sidebar-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 99;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s, visibility 0.3s;
+}
+
+.sidebar-overlay.open {
+  opacity: 1;
+  visibility: visible;
+}
+
+.sidebar-header {
+  padding: 24px 16px;
+  font-size: 20px;
+  font-weight: 700;
+  border-bottom: 1px solid #495057;
+}
+
+.sidebar-menu {
+  padding: 16px 0;
+}
+
+.menu-item {
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  color: #e9ecef;
+  text-decoration: none;
+  transition: background-color 0.3s;
+}
+
+.menu-item:hover, .menu-item:focus, .menu-item.active {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.menu-category {
+  font-weight: 700;
+  padding: 16px;
+  color: #3498db;
+  border-bottom: 1px solid #495057;
+}
+
+.submenu {
+  padding-left: 24px;
+}
+
+.submenu-item {
+  padding: 8px 16px;
+  display: block;
+  color: #e9ecef;
+  text-decoration: none;
+  transition: background-color 0.3s;
+}
+
+.submenu-item:hover, .submenu-item:focus, .submenu-item.active {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* Modal de detalhes do alerta */
+.alert-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 16px;
+}
+
+.alert-modal-content {
+  background-color: #343a40;
+  border-radius: 8px;
+  width: 100%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.alert-modal-header {
+  padding: 16px;
+  border-bottom: 1px solid #495057;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.alert-modal-header h2 {
+  font-size: 18px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.alert-modal-close {
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: #adb5bd;
+  cursor: pointer;
+}
+
+.alert-modal-body {
+  padding: 16px;
+}
+
+.alert-detail-row {
+  margin-bottom: 12px;
+}
+
+.alert-detail-label {
+  font-weight: 700;
+  color: #adb5bd;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.alert-detail-value {
+  color: #e9ecef;
+}
+
+.alert-modal-footer {
+  padding: 16px;
+  border-top: 1px solid #495057;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.alert-action-button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  color: white;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+/* Indicadores de carregamento e notificações */
+.loading-indicator {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  opacity: 1;
+  transition: opacity 0.5s;
+}
+
+.loading-indicator.fade-out {
+  opacity: 0;
+}
+
+.loading-spinner {
+  width: 50px;
+  height: 50px;
+  border: 5px solid #f3f3f3;
+  border-top: 5px solid #3498db;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 16px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-text {
+  color: #ffffff;
+  font-size: 18px;
+}
+
+.error-message, .info-message, .update-notification {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 12px 24px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  opacity: 1;
+  transition: opacity 0.5s;
+  color: white;
+}
+
+.error-message {
+  background-color: #e74c3c;
+}
+
+.info-message {
+  background-color: #3498db;
+}
+
+.update-notification {
+  background-color: #2ecc71;
+}
+
+.error-message.fade-out,
+.info-message.fade-out,
+.update-notification.fade-out {
+  opacity: 0;
+}
+
+/* Responsividade - conforme design aprovado */
+@media (max-width: 480px) {
+  .alerts-container {
+    flex-direction: column;
+  }
+  
+  .alerts-column {
+    padding: 8px;
+  }
+}
