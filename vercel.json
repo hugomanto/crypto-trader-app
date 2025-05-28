@@ -1,7 +1,7 @@
 {
   "functions": {
     "api.js": {
-      "runtime": "nodejs20.x"
+      "runtime": "nodejs18.x" // MUDANÇA AQUI: de nodejs20.x para nodejs18.x
     }
   },
   "rewrites": [
