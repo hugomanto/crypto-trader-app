@@ -1,11 +1,9 @@
 /**
  * Módulo de Gerenciamento de Timeframes
- * 
- * Este módulo implementa a seleção dinâmica de períodos (timeframes) para análise
+ * * Este módulo implementa a seleção dinâmica de períodos (timeframes) para análise
  * de criptomoedas, permitindo que o usuário escolha entre diferentes intervalos
  * de tempo e garantindo que todos os cálculos de indicadores se ajustem automaticamente.
- * 
- * Timeframes suportados:
+ * * Timeframes suportados:
  * - 15 minutos
  * - 30 minutos
  * - 1 hora
@@ -17,8 +15,8 @@
  * - 1 semana
  */
 
-const axios = require('axios');
-const indicators = require('./indicators_module');
+import { calculateRSI, calculateMACD, calculateBollingerBands, analyzeVolume, findSupportResistanceLevels, identifyCandlePatterns, calculateFibonacciLevels, calculateATR, calculateADX, calculateSMA, calculateEMA } from './indicators_module.js';
+import { formatPrice, convertUSDTtoBRL } from './price_display_module.js'; // Adicionei o '.js'
 
 // Constantes para timeframes
 const TIMEFRAMES = {
@@ -93,20 +91,15 @@ async function getHistoricalData(symbol, timeframe = TIMEFRAMES.HOUR_1, limit = 
     const interval = BINANCE_INTERVALS[timeframe] || '1h';
     
     // Fazer requisição à API da Binance
-    const response = await axios.get('https://api.binance.com/api/v3/klines', {
-      params: {
-        symbol: normalizedSymbol,
-        interval: interval,
-        limit: limit
-      }
-    });
+    const response = await fetch(`https://api.binance.com/api/v3/klines?symbol=${normalizedSymbol}&interval=${interval}&limit=${limit}`);
+    const data = await response.json();
     
-    if (!response.data || !Array.isArray(response.data)) {
+    if (!response.ok || !Array.isArray(data)) {
       throw new Error('Formato de resposta inválido');
     }
     
     // Transformar dados para formato padrão
-    const candles = response.data.map(candle => ({
+    const candles = data.map(candle => ({
       timestamp: candle[0],
       open: parseFloat(candle[1]),
       high: parseFloat(candle[2]),
@@ -195,21 +188,15 @@ async function getHistoricalDataAlternative(symbol, timeframe = TIMEFRAMES.HOUR_
     }
     
     // Fazer requisição à API do CryptoCompare
-    const response = await axios.get('https://min-api.cryptocompare.com/data/v2/histo' + cryptoCompareTimeframe, {
-      params: {
-        fsym: base,
-        tsym: quote || 'USDT',
-        limit: limit,
-        aggregate: aggregation
-      }
-    });
+    const response = await fetch(`https://min-api.cryptocompare.com/data/v2/histo${cryptoCompareTimeframe}?fsym=${base}&tsym=${quote || 'USDT'}&limit=${limit}&aggregate=${aggregation}`);
+    const data = await response.json();
     
-    if (!response.data || !response.data.Data || !response.data.Data.Data) {
+    if (!response.ok || !data || !data.Data || !data.Data.Data) {
       throw new Error('Formato de resposta inválido');
     }
     
     // Transformar dados para formato padrão
-    const candles = response.data.Data.Data.map(candle => ({
+    const candles = data.Data.Data.map(candle => ({
       timestamp: candle.time * 1000,
       open: candle.open,
       high: candle.high,
@@ -254,38 +241,38 @@ async function calculateAllIndicators(symbol, timeframe = TIMEFRAMES.HOUR_1) {
     const volumes = candles.map(candle => candle.volume);
     
     // Calcular RSI
-    const rsi = indicators.calculateRSI(closes);
+    const rsi = calculateRSI(closes);
     
     // Calcular Médias Móveis
-    const sma20 = indicators.calculateSMA(closes, 20);
-    const ema50 = indicators.calculateEMA(closes, 50);
-    const ema200 = indicators.calculateEMA(closes, 200);
+    const sma20 = calculateSMA(closes, 20);
+    const ema50 = calculateEMA(closes, 50);
+    const ema200 = calculateEMA(closes, 200);
     
     // Calcular MACD
-    const macd = indicators.calculateMACD(closes);
+    const macd = calculateMACD(closes);
     
     // Calcular Bandas de Bollinger
-    const bollinger = indicators.calculateBollingerBands(closes);
+    const bollinger = calculateBollingerBands(closes);
     
     // Analisar Volume
-    const volumeAnalysis = indicators.analyzeVolume(volumes);
+    const volumeAnalysis = analyzeVolume(volumes);
     
     // Encontrar níveis de Suporte e Resistência
-    const supportResistance = indicators.findSupportResistanceLevels(candles);
+    const supportResistance = findSupportResistanceLevels(candles);
     
     // Calcular níveis de Fibonacci
     const highestPrice = Math.max(...highs);
     const lowestPrice = Math.min(...lows);
-    const fibonacci = indicators.calculateFibonacciLevels(highestPrice, lowestPrice);
+    const fibonacci = calculateFibonacciLevels(highestPrice, lowestPrice);
     
     // Calcular ATR
-    const atr = indicators.calculateATR(candles);
+    const atr = calculateATR(candles);
     
     // Calcular ADX
-    const adx = indicators.calculateADX(candles);
+    const adx = calculateADX(candles);
     
     // Identificar padrões de candlesticks
-    const candlePatterns = indicators.identifyCandlePatterns(candles);
+    const candlePatterns = identifyCandlePatterns(candles);
     
     // Retornar todos os indicadores calculados
     return {
@@ -687,7 +674,7 @@ async function generateAlertsForMultipleSymbols(symbols, timeframe = TIMEFRAMES.
 /**
  * Exporta todas as funções e constantes do módulo
  */
-module.exports = {
+export {
   TIMEFRAMES,
   getHistoricalData,
   calculateAllIndicators,
