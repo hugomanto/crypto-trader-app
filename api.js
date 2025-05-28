@@ -1,26 +1,27 @@
 // API para integração com dados reais de criptomoedas
 // Baseado nas APIs do CryptoCompare, CoinGecko e Binance
 
-// Importar módulos de indicadores e timeframes
-if (typeof require !== 'undefined') {
-  try {
-    const indicators = require('../indicators_module.js');
-    const timeframes = require('../timeframes_module.js');
-    window.calculateRSI = indicators.calculateRSI;
-    window.calculateMACD = indicators.calculateMACD;
-    window.calculateSMA = indicators.calculateSMA;
-    window.calculateEMA = indicators.calculateEMA;
-    window.calculateBollingerBands = indicators.calculateBollingerBands;
-    window.analyzeVolume = indicators.analyzeVolume;
-    window.findSupportResistanceLevels = indicators.findSupportResistanceLevels;
-    window.calculateFibonacciLevels = indicators.calculateFibonacciLevels;
-    window.calculateATR = indicators.calculateATR;
-    window.calculateADX = indicators.calculateADX;
-    window.generateTechnicalAlerts = timeframes.generateTechnicalAlerts;
-  } catch (e) {
-    console.warn('Módulos Node.js não disponíveis no navegador:', e);
-  }
-}
+// Importar módulos de indicadores e timeframes usando ES Modules
+// Removemos o bloco 'if (typeof require !== 'undefined')' para forçar ES Modules
+import * as indicators from '../indicators_module.js'; // Importa tudo de indicators_module.js
+import { generateTechnicalAlerts, generateAlertsForMultipleSymbols, TIMEFRAMES } from '../timeframes_module.js'; // Importa funções específicas de timeframes_module.js
+
+// Expor funções globalmente para compatibilidade (se necessário no frontend)
+// Isso é uma prática comum para bibliotecas que precisam ser usadas tanto como módulos quanto globalmente
+// Se este arquivo for executado apenas como um módulo no Vercel/Node.js, esta parte pode ser removida
+// Se for executado no navegador diretamente (sem build tool), é importante manter.
+window.calculateRSI = indicators.calculateRSI;
+window.calculateMACD = indicators.calculateMACD;
+window.calculateSMA = indicators.calculateSMA;
+window.calculateEMA = indicators.calculateEMA;
+window.calculateBollingerBands = indicators.calculateBollingerBands;
+window.analyzeVolume = indicators.analyzeVolume;
+window.findSupportResistanceLevels = indicators.findSupportResistanceLevels;
+window.calculateFibonacciLevels = indicators.calculateFibonacciLevels;
+window.calculateATR = indicators.calculateATR;
+window.calculateADX = indicators.calculateADX;
+window.generateTechnicalAlerts = generateTechnicalAlerts; // Já importado, então podemos atribuir diretamente
+
 
 // Configuração das APIs
 const API_CONFIG = {
@@ -320,7 +321,7 @@ async function fetchSimulatedRealPrices() {
   // Usar valores aproximados baseados em dados recentes
   return [
     { symbol: 'BTC/USDT', price: 108646.09 }, // Valor atualizado conforme Binance
-    { symbol: 'ETH/USDT', price: 2559.85 },   // Valores atualizados
+    { symbol: 'ETH/USDT', price: 2559.85 },    // Valores atualizados
     { symbol: 'SOL/USDT', price: 149.50 },
     { symbol: 'BNB/USDT', price: 664.80 },
     { symbol: 'AVAX/USDT', price: 36.20 },
@@ -485,14 +486,14 @@ async function fetchAlerts() {
         const volumes = historicalData.map(candle => candle.volume);
         
         // Calcular RSI
-        const rsi = typeof window.calculateRSI === 'function' ? 
-                    window.calculateRSI(closes, 14) : 
-                    Math.floor(Math.random() * 100); // Fallback para simulação
+        const rsi = typeof indicators.calculateRSI === 'function' ? 
+                      indicators.calculateRSI(closes, 14) : 
+                      Math.floor(Math.random() * 100); // Fallback para simulação
         
         // Calcular MACD
         let macd = { line: 0, signal: 0, histogram: 0 };
-        if (typeof window.calculateMACD === 'function') {
-          const macdResult = window.calculateMACD(closes);
+        if (typeof indicators.calculateMACD === 'function') {
+          const macdResult = indicators.calculateMACD(closes);
           macd = {
             line: macdResult.line[macdResult.line.length - 1],
             signal: macdResult.signal[macdResult.signal.length - 1],
@@ -502,8 +503,8 @@ async function fetchAlerts() {
         
         // Calcular Bandas de Bollinger
         let bollinger = { upper: 0, middle: 0, lower: 0 };
-        if (typeof window.calculateBollingerBands === 'function') {
-          const bollingerResult = window.calculateBollingerBands(closes);
+        if (typeof indicators.calculateBollingerBands === 'function') {
+          const bollingerResult = indicators.calculateBollingerBands(closes);
           bollinger = {
             upper: bollingerResult.upper[bollingerResult.upper.length - 1],
             middle: bollingerResult.middle[bollingerResult.middle.length - 1],
@@ -513,27 +514,27 @@ async function fetchAlerts() {
         
         // Analisar Volume
         let volumeAnalysis = { volumeChange: 0, trend: 'neutral' };
-        if (typeof window.analyzeVolume === 'function') {
-          volumeAnalysis = window.analyzeVolume(volumes);
+        if (typeof indicators.analyzeVolume === 'function') {
+          volumeAnalysis = indicators.analyzeVolume(volumes);
         }
         
         // Encontrar níveis de Suporte e Resistência
         let supportResistance = { support: [], resistance: [] };
-        if (typeof window.findSupportResistanceLevels === 'function') {
-          supportResistance = window.findSupportResistanceLevels(historicalData);
+        if (typeof indicators.findSupportResistanceLevels === 'function') {
+          supportResistance = indicators.findSupportResistanceLevels(historicalData);
         }
         
         // Calcular ATR
         let atrValue = 0;
-        if (typeof window.calculateATR === 'function') {
-          const atrResult = window.calculateATR(historicalData);
+        if (typeof indicators.calculateATR === 'function') {
+          const atrResult = indicators.calculateATR(historicalData);
           atrValue = atrResult[atrResult.length - 1];
         }
         
         // Calcular ADX
         let adx = { value: 0, plusDI: 0, minusDI: 0 };
-        if (typeof window.calculateADX === 'function') {
-          const adxResult = window.calculateADX(historicalData);
+        if (typeof indicators.calculateADX === 'function') {
+          const adxResult = indicators.calculateADX(historicalData);
           adx = {
             value: adxResult.adx[adxResult.adx.length - 1],
             plusDI: adxResult.plusDI[adxResult.plusDI.length - 1],
@@ -797,7 +798,9 @@ function getCurrentTimeframe() {
   return currentTimeframe;
 }
 
-// Exportar funções para uso externo
+// Exportar funções para uso externo (apenas no ambiente de navegador)
+// Se este arquivo for usado EXCLUSIVAMENTE como módulo em Node.js/Vercel, esta linha pode ser removida.
+// Para compatibilidade, manter é mais seguro.
 window.WorkspaceAPI = {
   fetchCurrentPrices,
   fetchAlerts,
@@ -805,4 +808,19 @@ window.WorkspaceAPI = {
   forceUpdatePrices,
   setTimeframe,
   getCurrentTimeframe
+};
+
+// Exportar funções para uso como ES Module
+// Importante: Esta exportação é para quando o arquivo é tratado como um módulo.
+// Se ele for incluído via <script type="module"> no HTML, estas funções serão acessíveis.
+// Se for via Node.js, elas serão acessíveis diretamente após o import.
+export {
+  fetchCurrentPrices,
+  fetchAlerts,
+  markAlertAsRead,
+  forceUpdatePrices,
+  setTimeframe,
+  getCurrentTimeframe,
+  generateSimulatedHistoricalData, // Exportado para caso você precise testá-lo ou usá-lo separadamente
+  getHistoricalData // Exportado para caso você precise testá-lo ou usá-lo separadamente
 };
